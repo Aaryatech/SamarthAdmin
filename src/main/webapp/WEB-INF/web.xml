@@ -32,7 +32,7 @@
 	
 	<filter>
 		<filter-name>noBrowserCacheFilter</filter-name>
-		<filter-class>com.ats.hradmin.NoBrowserCacheFilter</filter-class>
+		<filter-class>com.ats.smadmin.NoBrowserCacheFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>noBrowserCacheFilter</filter-name>
