@@ -9,6 +9,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.ats.smadmin.model.LoginProcess;
+
 
 public class CheckUserInterceptor extends HandlerInterceptorAdapter {
 
@@ -44,10 +46,10 @@ public class CheckUserInterceptor extends HandlerInterceptorAdapter {
 
 		if (!path.equalsIgnoreCase("/sessionTimeOut") || path.startsWith("/resources")) {
 
-			LoginResponse userObj = null;
+			LoginProcess userObj = null;
 			try {
 
-				userObj = (LoginResponse) session.getAttribute("UserDetail");
+				userObj = (LoginProcess) session.getAttribute("admLogin");
 
 			} catch (Exception e) {
 				// TODO: handle exception

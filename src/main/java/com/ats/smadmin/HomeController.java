@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ats.smadmin.common.Constants;
 import com.ats.smadmin.model.Admin;
+import com.ats.smadmin.model.LoginProcess;
 import com.ats.smadmin.model.TableCat;
 import com.ats.smadmin.model.TableList;
 
@@ -74,10 +75,9 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/loginProcess", method = RequestMethod.POST)
-	public ModelAndView loginProcess(Model model, HttpServletRequest request, HttpServletResponse response,
+	public String loginProcess(Model model, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
-		//String mav = null;
-		ModelAndView mav = null;
+		String mav = null;
 		
 		try {
 
@@ -87,35 +87,26 @@ public class HomeController {
 			map.add("userName", request.getParameter("username"));
 			map.add("pass", request.getParameter("password"));
 
-			Admin admlogin = restTemplate.postForObject(Constants.url + "/userLoginProcess", map,
-					Admin.class);		
-
-			if (admlogin == null) {
-				mav = new ModelAndView("login");
+			LoginProcess admlogin = restTemplate.postForObject(Constants.url + "/adminLogin", map,
+					LoginProcess.class);		
+			System.err.println("Admin Login----------" + admlogin.getAdmin());	
+			if (admlogin.isError()==true) {
+				
+				mav = "redirect:/";
+				
 				System.err.println("Login failed");
-
 				model.addAttribute("errorPassMsg", "Invalid Login Credentials");
+				
 			} else {
+					mav = "redirect:/welcomePage";
 					session = request.getSession();	
 					session.setAttribute("admLogin", admlogin);
 					
-					System.err.println("Successful Login----------" + admlogin);	
-					mav = new ModelAndView("welcome");
-									
-					String currDate = Constants.getSimpleCurDate();
-					mav.addObject("currdate", currDate);					
-					
-					TableCat[] tableCatArr = restTemplate.getForObject(Constants.url + "/getAllTablesCatByIsUsed",TableCat[].class);
-					List<TableCat> tableCatList = new ArrayList<TableCat>(Arrays.asList(tableCatArr));
-					mav.addObject("tableCatList", tableCatList);
-					
-					TableList[]	tableArr = restTemplate.getForObject(Constants.url+"/getFreeTableList", TableList[].class);
-					List<TableList> tableList = new ArrayList<TableList>(Arrays.asList(tableArr));
-					mav.addObject("tableList", tableList);
+					System.err.println("Successful Login----------" + admlogin);						
 				
 				}
 		} catch (Exception e) {
-			mav = new ModelAndView("login");
+			mav = "redirect:/";
 			System.err.println("Exception in Login Process  " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -125,11 +116,23 @@ public class HomeController {
 	
 	@RequestMapping(value = "/welcomePage", method = RequestMethod.GET)
 	public ModelAndView welcomePage(Locale locale, Model model,HttpSession session) {
-		
 		ModelAndView mav = new ModelAndView("welcome");
-		
 		try {
 				
+				String currDate = Constants.getSimpleCurDate();
+				mav.addObject("currdate", currDate);					
+				
+				TableCat[] tableCatArr = restTemplate.getForObject(Constants.url + "/getAllTablesCatByIsUsed",TableCat[].class);
+				List<TableCat> tableCatList = new ArrayList<TableCat>(Arrays.asList(tableCatArr));
+				mav.addObject("tableCatList", tableCatList);
+				
+				TableList[]	tableArr = restTemplate.getForObject(Constants.url+"/getFreeTableList", TableList[].class);
+				List<TableList> tableList = new ArrayList<TableList>(Arrays.asList(tableArr));
+				mav.addObject("tableList", tableList);
+				
+				TableList[] busyTableArr = restTemplate.getForObject(Constants.url+"/getBsyTableList", TableList[].class);
+				List<TableList> busyTableLists = new ArrayList<TableList>(Arrays.asList(tableArr));
+				mav.addObject("busyTableList", busyTableLists);
 				/*Admin adm = (Admin) session.getAttribute("admLogin");
 				String  userName = adm.getUsername();
 				model.addAttribute("userName", userName);*/
