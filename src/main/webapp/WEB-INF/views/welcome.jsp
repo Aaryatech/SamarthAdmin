@@ -28,6 +28,8 @@ div.card-title {
 	<c:url value="/getAllMenuItems" var="getAllMenuItems"></c:url>
 	<c:url value="/getItemByCode" var="getItemByCode"></c:url>
 	
+	<c:url value="/getOrderItemList" var="getOrderItemList"></c:url>
+	<c:url value="/saveBill" var="saveBill"></c:url>
 
 	<!-- Main navbar -->
 	<jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
@@ -90,7 +92,7 @@ div.card-title {
 									<div class="header-elements">
 										<div class="list-icons">
 											<a class="list-icons-item" data-action="collapse"></a> <a
-												class="list-icons-item" data-action="reload"></a>
+												class="list-icons-item" data-action="reload" onclick="getTablesByCat()"></a>
 											<!-- <a
 												class="list-icons-item" data-action="remove"></a> -->
 										</div>
@@ -194,9 +196,9 @@ div.card-title {
 												+ data.busyTables[i].totalAmt
 												+ '</i></h3>'
 												+ '<div class="card-img-actions-overlay card-img">'
-												+ '<a href="#"  onclick="addMenu()"class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round" data-popup="lightbox" rel="group">'
+												+ '<a href="#" onclick="addMenu()"  class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round" data-popup="lightbox" rel="group">'
 												+ ' <i class="icon-plus3"></i> </a>'
-												+ '<a href="#" class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round ml-2"> <i class="icon-link"></i></a>'
+												+ '<a href="#" onclick="genBill('+data.busyTables[i].tableNo+',\''+data.busyTables[i].tableName+'\')" class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round ml-2"> <i class="icon-link"></i></a>'
 												+ '</div></div></div></div>';
 									}
 									$('#busy_table').html(busy_tab);
@@ -207,27 +209,86 @@ div.card-title {
 		}
 		
 
-		function addMenu() {
-
-			$.getJSON('${getAllMenuItems}', {
+		function addMenu(){
+			
+			$
+					.getJSON(
+							'${getAllMenuItems}',
+							{									
+								ajax : 'true',
+							},
+							function(data) {
+								$("#menuTable tbody").empty();
+								//alert("data "+JSON.stringify(data));									
+								 
+								 var len = data.length;		
+								
+							 	 for (var i = 0; i < len; i++) {
+									var tr_data = '<tr> <td>'+(i+1)+'</td>'+
+									'<td>'+data[i].itemName+'</td>'+
+									'<td><a href="#" onclick="call()">'+data[i].mrpRegular+'</a></td></tr>';
+									$('#menuTable' + ' tbody').append(tr_data);
+								}  								 
+								
+						      }); 
+			$("#modal_scrollable").modal('show'); 
+	}
+	var tabNo;
+function genBill(tableNo, tableName){
+	//alert("Bill Table----"+tableNo+":"+tableName);
+	tabNo = tableNo;
+	$
+	.getJSON(
+			'${getOrderItemList}',
+			{		
+				tableNo : tableNo,
 				ajax : 'true',
-			}, function(data) {
-				$("#menuTable tbody").empty();
-				//alert("data "+JSON.stringify(data));
+			},
+			function(data) {
+//				alert("data "+JSON.stringify(data[0]));
+				$("#billTable tbody").empty();				
+			
+			 	 for (var i = 0; i < data.length; i++) {				 	
+					
+			 		for (var j = 0; j < data[i].orderDetailsList.length; j++) {				 		
+			 			//alert(data[i].orderDetailsList[j].total+"-"+data[i].orderDetailsList[j].rate)
+			 			
+			 			 $("#billTable tbody").append("<tr><td>" + data[i].orderDetailsList[j].itemName + "</td><td>" + data[i].orderDetailsList[j].quantity + "</td>"+
+			 					 "<td>" + parseFloat(data[i].orderDetailsList[j].rate) + "</td><td>" + parseFloat(data[i].orderDetailsList[j].total) + "</td></tr>");
+			 		
+			 	  }
+			 		
+			 		document.getElementById("order_date").innerHTML = data[i].orderDate;
+			 		document.getElementById("order_amt").innerHTML = parseFloat(data[i].orderTotal);
+				}							 
+									
+		      }); 
+	document.getElementById("tab_no").innerHTML = tableName;
+	$("#bill_modal_scrollable").modal('show'); 
+}
 
-				var len = data.length;
-
-				for (var i = 0; i < len; i++) {
-					var tr_data = '<tr> <td>' + (i + 1) + '</td>' + '<td>'
-							+ data[i].itemName + '</td>'
-							+ '<td><a href="#" onclick="call()">'
-							+ data[i].mrpRegular + '</a></td></tr>';
-					$('#menuTable' + ' tbody').append(tr_data);
-				}
-
-			});
-			$("#modal_scrollable").modal('show');
-		}
+function saveOrder(){
+	var discount = $("#discount").val();
+	//alert(discount+" "+tabNo);
+	$
+	.getJSON(
+			'${saveBill}',
+			{		
+				tabNo:tabNo,
+				discount : discount,
+				ajax : 'true',
+			},
+			function(data) {
+				alert(data)
+					if(data==1){							 
+						$("#bill_modal_scrollable").modal('hide');
+						getTablesByCat();
+					}else{
+						$("#bill_modal_scrollable").modal('hide');
+						getTablesByCat();
+					}
+		      }); 
+}
 	</script>
 
 	<!-- Menu modal -->
@@ -272,7 +333,7 @@ div.card-title {
 										<div class="col-md-4">
 											<!-- 	<label for="catId">Select Remark :</label> -->
 											<select id="itemRemark" name="itemRemark" required
-												class="form-control form-control-lg select"
+												c	lass="form-control form-control-lg select"
 												data-container-css-class="select-lg" data-fouc="orderTable">
 
 												<option>with Ice cream</option>
@@ -353,6 +414,48 @@ div.card-title {
 		</div>
 	</div>
 	<!-- /Menu modal -->
+	
+	<!-- Bill modal -->
+				<div id="bill_modal_scrollable" class="modal fade" tabindex="-1">
+					<div class="modal-dialog modal-dialog-scrollable">
+						<div class="modal-content">
+							<div class="modal-header pb-3">
+								<h6 class="modal-title col-md-4">Date: <span id="order_date"></span></h6>
+								<h5 class="modal-title col-md-4">Table No. <span id="tab_no"></span></h5>
+								<h5 class="modal-title col-md-3"><i class="fas fa-rupee-sign">&nbsp;:&nbsp; <span id="order_amt"></span></i></h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+
+							<div class="modal-body py-0">
+								
+							<!-- Table -->
+							<table class="table datatable-basic" id="billTable">
+						<thead>
+							<tr>								
+								<th>Item Name</th>
+								<th>Qty</th>
+								<th>Price</th>
+								<th>Total</th>
+								<!-- <th class="text-center">Actions</th> -->
+							</tr>
+						</thead>
+						<tbody>					
+							
+						</tbody>
+					</table>
+							<!-- Table -->
+							</div>
+
+							<div class="modal-footer pt-3">
+							<label class="col-form-label">Discount</label>									
+								<input type="text" id="discount" name="discount" value="${disc}"><!-- class="form-control"  -->	
+								<button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+								<button type="button" class="btn bg-primary" onclick="saveOrder()">Generate Bill</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- bill modal -->
 
 </body>
 <script type="text/javascript">

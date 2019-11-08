@@ -137,6 +137,7 @@ public class HomeController {
 				String  userName = adm.getUsername();
 				model.addAttribute("userName", userName);*/
 				
+				mav.addObject("disc", 0);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
