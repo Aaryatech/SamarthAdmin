@@ -178,7 +178,7 @@ div.card-title {
 
 									for (var j = 0; j < data.freeTables.length; j++) {
 
-										tab_btn += '<p><button type="button" class="btn btn-success btn-md"  onclick="addMenu()">'
+										tab_btn += '<p><button type="button" class="btn btn-success btn-md"  onclick="addMenu('+data.freeTables[j].tableNo+','+data.freeTables[j].tableId+',\''+data.freeTables[j].tableName+'\')">'
 												+ data.freeTables[j].tableName
 												+ '</button></p>';
 
@@ -273,8 +273,27 @@ function genBill(tableNo, tableName){
 }
 
 function saveOrder(){
+	/* loader Start */	
+	$("#card").block({
+        message: '<i class="icon-spinner9 spinner"></i>',
+        overlayCSS: {
+            backgroundColor: '#1B2024',
+            opacity: 0.85,
+            cursor: 'wait'
+        },
+        css: {
+            border: 0,
+            padding: 0,
+            backgroundColor: 'none',
+            color: '#fff'
+        }
+    });		
+    /* loader End */
+    
 	var discount = $("#discount").val();
 	//alert(discount+" "+tabNo);
+	document.getElementById("myBtn").disabled = true;
+	$("#loader").show();
 	$
 	.getJSON(
 			'${saveBill}',
@@ -284,9 +303,12 @@ function saveOrder(){
 				ajax : 'true',
 			},
 			function(data) {
-				alert(data)
-					if(data==1){							 
+				//alert(data)
+					if(data==1){						
+						
 						$("#bill_modal_scrollable").modal('hide');
+						$("#card").unblock();
+						document.getElementById("myBtn").disabled = false;
 						getTablesByCat();
 					}else{
 						$("#bill_modal_scrollable").modal('hide');
@@ -434,7 +456,7 @@ function saveOrder(){
 								<button type="button" class="close" data-dismiss="modal">&times;</button>
 							</div>
 
-							<div class="modal-body py-0">
+							<div class="modal-body py-0" id="card">
 								
 							<!-- Table -->
 							<table class="table datatable-basic" id="billTable">
@@ -458,7 +480,7 @@ function saveOrder(){
 							<label class="col-form-label">Discount</label>									
 								<input type="text" id="discount" name="discount" value="${disc}"><!-- class="form-control"  -->	
 								<button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
-								<button type="button" class="btn bg-primary" onclick="saveOrder()">Generate Bill</button>
+								<button type="button" class="btn bg-primary" onclick="saveOrder()" id="myBtn">Generate Bill</button>
 							</div>
 						</div>
 					</div>
@@ -480,7 +502,7 @@ $('#itemQty').on('input', function() {
 		    success: function(data){
 		    	
 		    }
-		    })
+		    });
 
 		
 	}

@@ -178,7 +178,11 @@
 <script
 	src="${pageContext.request.contextPath}/resources/global_assets/js/demo_pages/extra_sweetalert.js"></script>
 
+<!-- Theme JS files -->
+	<script src="${pageContext.request.contextPath}/resources/global_assets/js/plugins/loaders/progressbar.min.js"></script>
 
+	<script src="${pageContext.request.contextPath}/resources/global_assets/js/demo_pages/components_progress.js"></script>
+	<!-- /theme JS files -->
 
 
 
