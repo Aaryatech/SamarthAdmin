@@ -5,10 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.ats.smadmin.common.Constants;
 import com.ats.smadmin.model.Item;
+import com.ats.smadmin.model.LoginProcess;
 import com.ats.smadmin.model.Order;
 import com.ats.smadmin.model.OrderDetails;
 import com.ats.smadmin.model.OrderDetailsList;
@@ -31,7 +34,8 @@ public class OrderController {
 
 	RestTemplate rest = new RestTemplate();
 
-	List<OrderDetailsList> ordDetailList = new ArrayList<OrderDetailsList>();
+	LinkedHashMap<Integer, ArrayList<OrderDetailsList>> hashMap = new LinkedHashMap<Integer, ArrayList<OrderDetailsList>>();
+	ArrayList<OrderDetailsList> ordDetailList = new ArrayList<OrderDetailsList>();
 
 	@RequestMapping(value = "/getItemByCode", method = RequestMethod.GET)
 	public @ResponseBody Object getItemByCode(HttpServletRequest request, HttpServletResponse response) {
@@ -44,7 +48,7 @@ public class OrderController {
 
 			item = rest.postForObject(Constants.url + "/getItemByCode", map, Item.class);
 
-			System.err.println("Qty " + request.getParameter("itemQty") + "Rem " + request.getParameter("itemRemark"));
+			//System.err.println("Qty " + request.getParameter("itemQty") + "Rem " + request.getParameter("itemRemark"));
 			OrderDetailsList order = null;
 			int found = 0;
 			/*
@@ -78,23 +82,44 @@ public class OrderController {
 			order.setStatus(1);
 
 			order.setTotal(order.getRate() * order.getQuantity());
-			ordDetailList.add(order);
+			int placeOrderTableId = Integer.parseInt(request.getParameter("placeOrderTableId"));
+			
+
+			if (hashMap.containsKey(placeOrderTableId)) {
+
+				ordDetailList = hashMap.get(placeOrderTableId);
+				ordDetailList.add(order);
+
+			} else {
+
+				ordDetailList = new ArrayList<OrderDetailsList>();
+				ordDetailList.add(order);
+			}
+			// ordDetailList.add(order);
+
+			hashMap.put(placeOrderTableId, ordDetailList);
+			System.err.println("placeOrderTableId " +placeOrderTableId +"Item " + hashMap.get(placeOrderTableId).get(0).getItemName());
+			
 			if (ordDetailList.size() > 0)
-				return ordDetailList;
+				return hashMap.get(placeOrderTableId);
 
 		} catch (Exception e) {
 			item = new Item();
+			e.printStackTrace();
 		}
 
 		return item;
 	}
 
-	@RequestMapping(value = "/placeOrder", method = RequestMethod.GET)
+	@RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
 	public @ResponseBody Object placeOrder(HttpServletRequest request, HttpServletResponse response) {
 		Item item = null;
-
+		System.err.println("In placeOrder ");
 		Order orderRes = new Order();
 		try {
+
+			HttpSession session = request.getSession();
+			LoginProcess adm = (LoginProcess) session.getAttribute("admLogin");
 
 			orderRes.setBillStatus(1);
 			String curDate;
@@ -112,33 +137,41 @@ public class OrderController {
 
 			orderRes.setOrderId(0);
 
-			orderRes.setTableNo(1);
-			orderRes.setUserId(1);
+			orderRes.setTableNo(Integer.parseInt(request.getParameter("placeOrderTableId")));
+			orderRes.setUserId(adm.getAdmin().getAdminId());
 
 			List<OrderDetails> orderDetailList = new ArrayList<>();
+			int placeOrderTableId = Integer.parseInt(request.getParameter("placeOrderTableId"));
+
+			ArrayList<OrderDetailsList> ordDetailList = hashMap.get(placeOrderTableId);
 
 			for (int i = 0; i < ordDetailList.size(); i++) {
-
-				orderRes.getOrderDetailList().get(i).setOrderId(orderRes.getOrderId());
 
 				OrderDetails od = new OrderDetails();
 
 				od.setIsMixer(0);
-				od.setItemId(orderDetailList.get(i).getItemId());
+				od.setItemId(ordDetailList.get(i).getItemId());
 				od.setOrderDetailsId(0);
 				od.setOrderId(orderRes.getOrderId());
-				od.setQuantity(orderDetailList.get(i).getQuantity());
-				od.setRate(orderDetailList.get(i).getRate());
-				od.setRemark(orderDetailList.get(i).getRemark());
+				od.setQuantity(ordDetailList.get(i).getQuantity());
+				od.setRate(ordDetailList.get(i).getRate());
+				od.setRemark(ordDetailList.get(i).getRemark());
 				od.setStatus(1);
+
 				orderDetailList.add(od);
 
 			}
 
+			orderRes.setOrderDetailList(orderDetailList);
+
 			orderRes = rest.postForObject(Constants.url + "/saveOrder", orderRes, Order.class);
+			if (orderRes != null) {
+				hashMap.remove(placeOrderTableId);
+
+			}
 
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 		return item;
 	}

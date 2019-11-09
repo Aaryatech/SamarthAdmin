@@ -196,7 +196,7 @@ div.card-title {
 												+ data.busyTables[i].totalAmt
 												+ '</i></h3>'
 												+ '<div class="card-img-actions-overlay card-img">'
-												+ '<a href="#" onclick="addMenu()"  class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round" data-popup="lightbox" rel="group">'
+												+ '<a href="#" onclick="addMenu('+data.busyTables[i].tableNo+','+data.busyTables[i].tableId+',\''+data.busyTables[i].tableName+'\')"  class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round" data-popup="lightbox" rel="group">'
 												+ ' <i class="icon-plus3"></i> </a>'
 												+ '<a href="#" onclick="genBill('+data.busyTables[i].tableNo+',\''+data.busyTables[i].tableName+'\')" class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round ml-2"> <i class="icon-link"></i></a>'
 												+ '</div></div></div></div>';
@@ -209,7 +209,7 @@ div.card-title {
 		}
 		
 
-		function addMenu(){
+		function addMenu(tableNo,tableId,tableName){
 			
 			$
 					.getJSON(
@@ -232,6 +232,11 @@ div.card-title {
 								
 						      }); 
 			$("#modal_scrollable").modal('show'); 
+			
+			document.getElementById("placeOrderTableId").value=tableId;
+			
+			// $("#orderTable tbody").empty();
+			//getOrderdetail of this table Id 9-11-2019 Sachin
 	}
 	var tabNo;
 function genBill(tableNo, tableName){
@@ -293,21 +298,23 @@ function saveOrder(){
 
 	<!-- Menu modal -->
 	<div id="modal_scrollable" class="modal fade" tabindex="-1">
+	<form id="placeOrderForm" >
+	<input type="hidden" id="placeOrderTableId" name="placeOrderTableId" value="0">
 		<div class="modal-dialog modal-full">
 			<div class="modal-content">
-				<div class="modal-header pb-3">
+				<!-- <div class="modal-header pb-3">
 					<h5 class="modal-title">Order Order</h5>
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
+				</div> -->
 
 				<div class="modal-body py-0">
 					<div class="row">
 						<div class="col-md-6">
 							<!-- Basic layout-->
 							<div class="card">
-								<div class="card-header header-elements-inline">
+								<!-- <div class="card-header header-elements-inline">
 									<h6 class="card-title">Add Items</h6>
-								</div>
+								</div> -->
 
 								<div class="card-body">
 									<div class="row">
@@ -333,7 +340,7 @@ function saveOrder(){
 										<div class="col-md-4">
 											<!-- 	<label for="catId">Select Remark :</label> -->
 											<select id="itemRemark" name="itemRemark" required
-												c	lass="form-control form-control-lg select"
+												class="form-control form-control-lg select"
 												data-container-css-class="select-lg" data-fouc="orderTable">
 
 												<option>with Ice cream</option>
@@ -355,7 +362,7 @@ function saveOrder(){
 									</div>
 
 									<!-- Table -->
-									<table class="table datatable-basic" id="menuTable">
+									<table class="table datatable-basic1" id="menuTable">
 										<thead>
 											<tr>
 												<th>Sr No.</th>
@@ -374,12 +381,12 @@ function saveOrder(){
 
 						<div class="col-md-6">
 							<div class="card">
-								<div class="card-header header-elements-inline">
+								<!-- <div class="card-header header-elements-inline">
 									<h6 class="card-title">Ordered Items</h6>
-								</div>
+								</div> -->
 								<div class="card-body">
 									<!-- Table orderTable -->
-									<table class="table datatable-basic" id="orderTable">
+									<table class="table datatable-basic1" id="orderTable">
 										<thead>
 											<tr>
 												<th>Sr No.</th>
@@ -412,6 +419,7 @@ function saveOrder(){
 				</div>
 			</div>
 		</div>
+		</form>
 	</div>
 	<!-- /Menu modal -->
 	
@@ -467,7 +475,7 @@ $('#itemQty').on('input', function() {
 		$.ajax({
 		       type: "POST",
 		            url: "${pageContext.request.contextPath}/placeOrder",
-		            data: $("#modalfrm").serialize(),
+		            data: $("#placeOrderForm").serialize(),
 		            dataType: 'json',
 		    success: function(data){
 		    	
@@ -481,11 +489,13 @@ function getItenNameByCode(){
 	var itemCode=document.getElementById("itemCode").value;
 	var itemQty=document.getElementById("itemQty").value;
 	var itemRemark=document.getElementById("itemRemark").value;
-	
+	var placeOrderTableId =document.getElementById("placeOrderTableId").value;
+
 	$.getJSON('${getItemByCode}', {
 		itemCode: itemCode,
 		itemQty : itemQty,
 		itemRemark : itemRemark,
+		placeOrderTableId : placeOrderTableId,
 		ajax : 'true',
 	}, function(data) {
 		alert(JSON.stringify(data));
@@ -516,39 +526,4 @@ function call(vale) {
 
 </html>
 
-<!-- function addMenu(){
-			
-				$
-						.getJSON(
-								'${getAllMenuItems}',
-								{									
-									ajax : 'true',
-								},
-								function(data) {
-									$("#menuTable tbody").empty();
-									alert("data "+JSON.stringify(data));
-									
-									 /*  var dataTable = $('#menuTable')
-									.DataTable();
-									dataTable.clear().draw();  */ 
-									 var len = data.length;
-									alert(data.length);
-									
-									 for (var i = 0; i < len; i++) {
-										var tr_data += '<tr> <td>'+(i+1)+'</td>'+
-										'<td>'+data[i].itemName+'</td>'+
-										'<td><a href="#">'+data[i].mrpRegular+'</a></td></tr>';
-										$('#menuTable' + ' tbody').append(tr_data);
-									} 
-								/*  $.each(data,function(i, v) {
-										dataTable.row
-										.add(
-										[i + 1,
-										v.itemName,
-										v.mrpRegular
-										]).draw();
-									});   */
-									
-							      }); 
-				$("#modal_scrollable").modal('show'); 
-		} -->
+
