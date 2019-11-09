@@ -27,6 +27,10 @@ div.card-title {
 	<c:url value="/getTablesByCatId" var="getTablesByCatId"></c:url>
 	<c:url value="/getAllMenuItems" var="getAllMenuItems"></c:url>
 	<c:url value="/getItemByCode" var="getItemByCode"></c:url>
+    <c:url value="/getOrderDataByTableId" var="getOrderDataByTableId"></c:url>
+	
+	
+	
 	
 	<c:url value="/getOrderItemList" var="getOrderItemList"></c:url>
 	<c:url value="/saveBill" var="saveBill"></c:url>
@@ -68,6 +72,7 @@ div.card-title {
 								<span class="input-group-prepend"> <span
 									class="input-group-text"> <i class="icon-calendar22">&nbsp;&nbsp;</i>${currdate}</span>
 								</span>
+								
 							</div>
 
 							<div class="col-md-6">
@@ -209,35 +214,7 @@ div.card-title {
 		}
 		
 
-		function addMenu(tableNo,tableId,tableName){
-			
-			$
-					.getJSON(
-							'${getAllMenuItems}',
-							{									
-								ajax : 'true',
-							},
-							function(data) {
-								$("#menuTable tbody").empty();
-								//alert("data "+JSON.stringify(data));									
-								 
-								 var len = data.length;		
-								
-							 	 for (var i = 0; i < len; i++) {
-									var tr_data = '<tr> <td>'+(i+1)+'</td>'+
-									'<td>'+data[i].itemName+'</td>'+
-									'<td><a href="#" onclick="call()">'+data[i].mrpRegular+'</a></td></tr>';
-									$('#menuTable' + ' tbody').append(tr_data);
-								}  								 
-								
-						      }); 
-			$("#modal_scrollable").modal('show'); 
-			
-			document.getElementById("placeOrderTableId").value=tableId;
-			
-			// $("#orderTable tbody").empty();
-			//getOrderdetail of this table Id 9-11-2019 Sachin
-	}
+		
 	var tabNo;
 function genBill(tableNo, tableName){
 	//alert("Bill Table----"+tableNo+":"+tableName);
@@ -251,7 +228,7 @@ function genBill(tableNo, tableName){
 			},
 			function(data) {
 //				alert("data "+JSON.stringify(data[0]));
-				$("#billTable tbody").empty();				
+				$("#	 tbody").empty();				
 			
 			 	 for (var i = 0; i < data.length; i++) {				 	
 					
@@ -322,8 +299,14 @@ function saveOrder(){
 	<div id="modal_scrollable" class="modal fade" tabindex="-1">
 	<form id="placeOrderForm" >
 	<input type="hidden" id="placeOrderTableId" name="placeOrderTableId" value="0">
+		<input type="hidden" id="placeOrderTableNo" name="placeOrderTableNo" value="0">
+	
+	
+	
+	
 		<div class="modal-dialog modal-full">
 			<div class="modal-content">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<!-- <div class="modal-header pb-3">
 					<h5 class="modal-title">Order Order</h5>
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -334,17 +317,23 @@ function saveOrder(){
 						<div class="col-md-6">
 							<!-- Basic layout-->
 							<div class="card">
-								<!-- <div class="card-header header-elements-inline">
-									<h6 class="card-title">Add Items</h6>
-								</div> -->
+							
+								<div class="card-header header-elements-inline">
+									<h6 class="card-title" id="table_Ord_no"></h6>
+								</div>
 
 								<div class="card-body">
 									<div class="row">
 										<div class="col-md-2">
 											<!-- 	<label for="itemCode">Item Code :</label> -->
-											<input type="text" name="itemCode" id="itemCode" required
+											<input list="itemList" type="text" name="itemCode" id="itemCode" required
 												class="form-control" maxlength="4" onchange="trim(this)"
-												placeholder="Item Code">
+												placeholder="Item Code"  tabindex="1">
+												
+												<datalist id="itemList" style="background-color: white">
+												
+												</datalist>
+												
 										</div>
 										<!-- <div class="col-md-3">
 											<label for="itemName">Item Name :</label> 
@@ -356,14 +345,14 @@ function saveOrder(){
 											<!-- <label for="itemQty">Qty :</label> -->
 											<input type="text" name="itemQty" id="itemQty" required
 												class="form-control" maxlength="4" onchange="trim(this)"
-												placeholder="Qty">
+												placeholder="Qty"  tabindex="2">
 										</div>
 
 										<div class="col-md-4">
 											<!-- 	<label for="catId">Select Remark :</label> -->
 											<select id="itemRemark" name="itemRemark" required
 												class="form-control form-control-lg select"
-												data-container-css-class="select-lg" data-fouc="orderTable">
+												data-container-css-class="select-lg" data-fouc="orderTable"  tabindex="3">
 
 												<option>with Ice cream</option>
 												<option>without Ice cream</option>
@@ -377,9 +366,7 @@ function saveOrder(){
 											</select>
 										</div>
 										<div class="col-md-1">
-											
-												<i class="icon-add" onclick="getItenNameByCode()"></i>
-											
+												<button type="button"  tabindex="4" onclick="getItenNameByCode()"><i class="icon-add"></i></button>
 										</div>
 									</div>
 
@@ -424,7 +411,35 @@ function saveOrder(){
 										</tbody>
 									</table>
 									<!-- Table orderTable -->
-									<button type="button" class="btn btn-primary" onclick="placeOrder()">Place Order</button>
+									<button type="button" class="btn btn-primary" id="placeOrderButton" onclick="placeOrder()">Place Order</button>
+									
+								</div>
+							</div>
+							
+							
+							<div class="card">
+								<!-- <div class="card-header header-elements-inline">
+									<h6 class="card-title">Ordered Items</h6>
+								</div> -->
+								<div class="card-body">
+									<!-- Table prevOrderTable -->
+									<table class="table datatable-basic1" id="prevOrderTable">
+										<!-- <thead>
+											<tr>
+												<th>Item Name</th>
+												<th>Qty</th>
+													<th>Rate</th>
+														<th>Total</th>
+											
+												<th class="text-center">Actions</th>
+											</tr>
+										</thead> -->
+										<tbody>
+
+										</tbody>
+									</table>
+										<!-- Table prevOrderTable -->
+								
 									
 								</div>
 							</div>
@@ -436,8 +451,6 @@ function saveOrder(){
 				</div>
 
 				<div class="modal-footer pt-3">
-					<button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
-					<button type="button" class="btn bg-primary">Save changes</button>
 				</div>
 			</div>
 		</div>
@@ -494,25 +507,50 @@ $('#itemQty').on('input', function() {
 	});
 	
 	function placeOrder(){
+		//$("#loader").show();
+		var rowCount = $('#orderTable tr').length;
+		if(rowCount>1){
+		document.getElementById("placeOrderButton").disabled = true;
 		$.ajax({
 		       type: "POST",
 		            url: "${pageContext.request.contextPath}/placeOrder",
 		            data: $("#placeOrderForm").serialize(),
 		            dataType: 'json',
 		    success: function(data){
-		    	
-		    }
-		    });
+		    	//alert(data);
 
-		
+		    }
+		    }).done(function() {
+		    	var tableNo=document.getElementById("placeOrderTableNo").value;
+		    	//alert("tableNo " +tableNo)
+		    		showPrevOrdersByTableNo(tableNo);
+		    		$("#orderTable tbody").empty();
+		    		document.getElementById("placeOrderButton").disabled = false;
+		    		document.getElementById("itemCode").value=null;
+		    		document.getElementById("itemQty").value=null;
+		    		
+		            });
+		}//end of if
+		else{
+			alert("Please add Item First")
+		}
 	}
 function getItenNameByCode(){
-	
+	//$("itemCode").focus();
 	var itemCode=document.getElementById("itemCode").value;
 	var itemQty=document.getElementById("itemQty").value;
 	var itemRemark=document.getElementById("itemRemark").value;
 	var placeOrderTableId =document.getElementById("placeOrderTableId").value;
-
+	valid=true;
+	if(itemCode==null || itemCode==""){
+		alert("Please Enter Item Code");
+		valid=false;
+	}
+	if(itemQty==null || itemQty<1){
+		alert("Please Enter Item Quatity");
+		valid=false;
+	}
+if(valid==true)
 	$.getJSON('${getItemByCode}', {
 		itemCode: itemCode,
 		itemQty : itemQty,
@@ -520,11 +558,14 @@ function getItenNameByCode(){
 		placeOrderTableId : placeOrderTableId,
 		ajax : 'true',
 	}, function(data) {
-		alert(JSON.stringify(data));
+		//alert(JSON.stringify(data));
 		if(data[0].itemId==0){
 			alert("Item Not Found");
 		}else{
 			
+			document.getElementById("itemCode").value=null;
+    		document.getElementById("itemQty").value=null;
+    		
 			 $("#orderTable tbody").empty();
 				//alert("data "+JSON.stringify(data));
 
@@ -532,7 +573,7 @@ function getItenNameByCode(){
 
 			 	for (var i = 0; i < len; i++) {
 					var tr_data = '<tr> <td>' + (i + 1) + '</td>' + '<td>'
-							+ data[i].itemName +'-'+data[i].remark+ '</td>'+'<td>' + data[i].quantity + '</td>'+ '<td><a href="#" title="delete" onclick="call('+i+')">'
+							+ data[i].itemName +' ['+data[i].remark+ ']</td>'+'<td>' + data[i].quantity + '</td>'+ '<td><a href="#" title="delete" onclick="call('+i+')">'
 							+ '<i class="fa fa-trash"></i>'+ '</a></td></tr>';
 					$('#orderTable' + ' tbody').append(tr_data);
 				} 
@@ -542,8 +583,116 @@ function getItenNameByCode(){
 	
 }
 function call(vale) {
-	alert("hi"+vale);
+	//alert("hi In delete To be done"+vale);
+	var placeOrderTableId =document.getElementById("placeOrderTableId").value;
+	getOrderDataByTableId(placeOrderTableId,vale);
 }
+
+function addMenu(tableNo,tableId,tableName){
+	//table_Ord_no
+	document.getElementById("table_Ord_no").innerHTML=tableName + " Add Items For Order";
+	$
+			.getJSON(
+					'${getAllMenuItems}',
+					{									
+						ajax : 'true',
+					},
+					function(data) {
+						$("#menuTable tbody").empty();
+						//alert("data "+JSON.stringify(data));	
+						 var html="";
+
+						 var len = data.length;		
+						
+					 	 for (var i = 0; i < len; i++) {
+							var tr_data = '<tr> <td>'+(i+1)+'</td>'+
+							'<td>'+data[i].itemName+ ' ['+data[i].itemDesc+']</td>'+
+							'<td><a href="#">'+data[i].mrpRegular+'</a></td></tr>';
+							$('#menuTable' + ' tbody').append(tr_data);
+							                    
+
+	                        html += '<option value="' + data[i].itemDesc + '">';
+
+	                    }
+					 	// alert(html);
+						
+		                    $('#itemList').html(html);
+		                   // $("#itemList").trigger("chosen:updated");
+
+				      }); 
+	$("#modal_scrollable").modal('show'); 
+	
+	document.getElementById("placeOrderTableId").value=tableId;
+	document.getElementById("placeOrderTableNo").value=tableNo;
+	//alert("tableNo " +tableNo)
+		showPrevOrdersByTableNo(tableNo);
+
+	getOrderDataByTableId(tableId,-1);
+	// $("#orderTable tbody").empty();
+	//getOrderdetail of this table Id 9-11-2019 Sachin
+}
+
+function getOrderDataByTableId(tableId,key){
+	//alert(key);
+	 $("#orderTable tbody").empty();
+	$.getJSON('${getOrderDataByTableId}', {
+		placeOrderTableId : tableId,
+		key : key,
+		ajax : 'true',
+	}, function(data) {
+		//alert(JSON.stringify(data));
+		if(data[0].itemId==0){
+			alert("Item Not Found");
+		}else{
+			
+			 $("#orderTable tbody").empty();
+			
+				var len = data.length;
+
+			 	for (var i = 0; i < len; i++) {
+					var tr_data = '<tr> <td>' + (i + 1) + '</td>' + '<td>'
+							+ data[i].itemName +' ['+data[i].remark+ ']</td>'+'<td>' + data[i].quantity + '</td>'+ '<td><a href="#" title="delete" onclick="call('+i+')">'
+							+ '<i class="fa fa-trash"></i>'+ '</a></td></tr>';
+					$('#orderTable' + ' tbody').append(tr_data);
+				} 
+		}
+	
+	} );
+	
+}
+	function showPrevOrdersByTableNo(tableNo){
+	//	alert(tableNo)
+		$
+		.getJSON(
+				'${getOrderItemList}',
+				{		
+					tableNo : tableNo,
+					ajax : 'true',
+				},
+				function(data) {
+				//alert("data "+JSON.stringify(data[0]));
+					$("#prevOrderTable tbody").empty();				
+				
+				 	 for (var i = 0; i < data.length; i++) {
+				 		 
+				 		 //alert(data[i].orderTotal);
+				 		 
+	$("#prevOrderTable tbody").append("<tr><th>Item Name [KOT No "+data[i].orderId+"]</th><th>Qty</th><th>Rate</th><th>Total [Total Items "+data[i].orderDetailsList.length+"]</th></tr>");		
+					
+				 		
+				 		for (var j = 0; j < data[i].orderDetailsList.length; j++) {				 		
+				 			//alert(data[i].orderDetailsList[j].total+"-"+data[i].orderDetailsList[j].rate)
+				 			
+				 			 $("#prevOrderTable tbody").append("<tr><td>" + data[i].orderDetailsList[j].itemName + "</td><td>" + data[i].orderDetailsList[j].quantity + "</td>"+
+				 					 "<td>" + parseFloat(data[i].orderDetailsList[j].rate) + "</td><td>" + parseFloat(data[i].orderDetailsList[j].total) + "</td></tr>");
+				 		
+				 	  }
+				 	
+					}							 
+										
+			      }); 
+	}
+
 </script>
 
 </html>

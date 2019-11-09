@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Samarth</title>
 <link rel="shortcut icon"
-	href="${pageContext.request.contextPath}/resources/global_assets/images/kppm.png"
+	href="${pageContext.request.contextPath}/resources/global_assets/images/sam.jpg"
 	type="image/x-icon" />
 <link
 	href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -52,7 +52,7 @@ a{
      background-color: rgba(112,191,68,1); 
     height:500px;
     position:absolute;
-    top:-50px;
+    top:50px;
     width:50%;
     right:calc(50% - 50px);
     transition:.3s ease-in-out;
@@ -190,17 +190,21 @@ a{
 		<div class="register-info-box">
 
 			<img
-				src="${pageContext.request.contextPath}/resources/global_assets/images/kppm.png"
-				alt="" style="height: 50px; width: 150px;">
+				src="${pageContext.request.contextPath}/resources/global_assets/images/sam.jpg"
+				alt="" style="height: 450px; width: 350px;">
 
 		</div>
 
-		<p
+		<!-- <p
 			style="color: #00669B; font-size: 15px; width: 40%; padding: 0 20px; top: 30%; right: 0; position: absolute; text-align: center;">
 			<br> <br>Delivering with Professional Excellence To be
 			preferred Chartered Accountant, Advisor or Consultant to Business
 			across India; and provide utility oriented legal compliance.
 		</p>
+ -->
+ <%-- <img
+				src="${pageContext.request.contextPath}/resources/global_assets/images/sam.jpg"
+				alt="" style="height: 50px; width: 150px;"> --%>
 
 		<div class="white-panel">
 			<div class="login-show">

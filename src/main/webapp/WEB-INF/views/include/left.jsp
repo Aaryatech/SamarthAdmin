@@ -34,7 +34,7 @@
 				<!-- Main -->
 				<!-- <li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Main</div> <i class="icon-menu" title="Main"></i></li> -->
 				<li class="nav-item"><a
-					href="${pageContext.request.contextPath}/dashboard"
+					href="${pageContext.request.contextPath}/welcomePage"
 					class="nav-link active" onclick="selectSubMod(0,0)"> <i
 						class="icon-home4"></i> <span> Dashboard </span>
 				</a></li>
@@ -45,12 +45,12 @@
 						class="icon-home4"></i> <span> Dashboard1 </span>
 				</a></li> --%> 
 
-				<li class="nav-item"><a
+			<%-- 	<li class="nav-item"><a
 					href="${pageContext.request.contextPath}/taskListForEmp"
 					class="nav-link active" onclick="selectSubMod(0,0)"> <i
 						class="icon-home4"></i> <span> Home </span>
 				</a></li>
-
+ --%>
 
 				<%-- <li class="nav-item nav-item-submenu"><a href="#"
 					class="nav-link"><i class="icon-file-locked"></i><span>Access

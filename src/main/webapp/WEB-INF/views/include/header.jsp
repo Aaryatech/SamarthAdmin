@@ -3,11 +3,11 @@
 
 <div class="navbar navbar-expand-md navbar-light">
 	<div class="navbar-brand">
-		<a href="${pageContext.request.contextPath}/dashboard"
+		<a href="${pageContext.request.contextPath}/welcomePage"
 			class="d-inline-block"> <%-- <img src="${pageContext.request.contextPath}/resources/global_assets/images/logo_light.png" alt=""> --%>
 			<img
-			src="${pageContext.request.contextPath}/resources/global_assets/images/kppm.png"
-			alt="" style="height: 25px; width: 100px;">
+			src="${pageContext.request.contextPath}/resources/global_assets/images/sam.jpg"
+			alt="" style="height: 50px; width: 110px;">
 		</a>
 	</div>
 

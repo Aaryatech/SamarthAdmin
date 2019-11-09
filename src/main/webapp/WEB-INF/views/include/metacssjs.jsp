@@ -7,7 +7,7 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Samarth</title>
 <link rel="shortcut icon"
-	href="${pageContext.request.contextPath}/resources/global_assets/images/kppm.png"
+	href="${pageContext.request.contextPath}/resources/global_assets/images/sam.jpg"
 	type="image/x-icon" />
 <!-- Global stylesheets -->
 <!-- <link
