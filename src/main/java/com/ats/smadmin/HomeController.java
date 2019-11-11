@@ -111,6 +111,7 @@ public class HomeController {
 					mav = "redirect:/welcomePage";
 					session = request.getSession();	
 					session.setAttribute("admLogin", admlogin);
+					session.setMaxInactiveInterval(18000); // mean inactive immediately
 					
 					System.err.println("Successful Login----------" + admlogin);						
 				
@@ -215,15 +216,13 @@ public class HomeController {
 
 				ordDetailList = hashMap.get(placeOrderTableId);
 				int found = 0;
-				for(int i=0;i<ordDetailList.size();i++) {
-				
-					if(ordDetailList.get(i).getItemId()==order.getItemId()) {
-						System.err.println("Item Matched ");
-						ordDetailList.set(i, order);
-						found =1;
-						break;
-					}
-				}
+					/*
+					 * for(int i=0;i<ordDetailList.size();i++) {
+					 * 
+					 * if(ordDetailList.get(i).getItemId()==order.getItemId()) {
+					 * System.err.println("Item Matched "); ordDetailList.set(i, order); found =1;
+					 * break; } }
+					 */
 				if(found==0) {
 					ordDetailList.add(order);
 				}
@@ -344,4 +343,10 @@ public class HomeController {
 	}
 
 	
+	@RequestMapping(value = "/printBill", method = RequestMethod.GET)
+	public ModelAndView printBill(Locale locale, Model model,HttpSession session) {
+		ModelAndView mav = new ModelAndView("cust_bill_print");
+		return mav;
+	
+	}
 }

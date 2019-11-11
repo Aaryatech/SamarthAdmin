@@ -20,10 +20,22 @@ div.card-title {
 	padding-left: 20px !important;
 	height: 10px !important;
 } */
+
+#menuTable tr:hover:nth-child(odd)
+{
+    background: orange;
+}
+
+#menuTable tr:hover:nth-child(even)
+{
+    background: yellow;
+}
+
+
 </style>
 </head>
 
-<body>
+<body class="sidebar-xs">
 	<c:url value="/getTablesByCatId" var="getTablesByCatId"></c:url>
 	<c:url value="/getAllMenuItems" var="getAllMenuItems"></c:url>
 	<c:url value="/getItemByCode" var="getItemByCode"></c:url>
@@ -228,10 +240,10 @@ function genBill(tableNo, tableName){
 			},
 			function(data) {
 //				alert("data "+JSON.stringify(data[0]));
-				$("#	 tbody").empty();				
-			
+				$("#billTable tbody").empty();				
+			var tot=0;
 			 	 for (var i = 0; i < data.length; i++) {				 	
-					
+					tot=tot+data[i].orderTotal;
 			 		for (var j = 0; j < data[i].orderDetailsList.length; j++) {				 		
 			 			//alert(data[i].orderDetailsList[j].total+"-"+data[i].orderDetailsList[j].rate)
 			 			
@@ -240,9 +252,10 @@ function genBill(tableNo, tableName){
 			 		
 			 	  }
 			 		
-			 		document.getElementById("order_date").innerHTML = data[i].orderDate;
-			 		document.getElementById("order_amt").innerHTML = parseFloat(data[i].orderTotal);
-				}							 
+			 		
+				}	
+			 	document.getElementById("order_date").innerHTML = data[0].orderDate;
+		 		document.getElementById("order_amt").innerHTML =tot;// parseFloat(data[i].orderTotal);
 									
 		      }); 
 	document.getElementById("tab_no").innerHTML = tableName;
@@ -287,6 +300,9 @@ function saveOrder(){
 						$("#card").unblock();
 						document.getElementById("myBtn").disabled = false;
 						getTablesByCat();
+						window.open("${pageContext.request.contextPath}/printBill");
+						
+						
 					}else{
 						$("#bill_modal_scrollable").modal('hide');
 						getTablesByCat();
@@ -507,7 +523,7 @@ $('#itemQty').on('input', function() {
 	});
 	
 	function placeOrder(){
-		//$("#loader").show();
+		
 		var rowCount = $('#orderTable tr').length;
 		if(rowCount>1){
 		document.getElementById("placeOrderButton").disabled = true;
@@ -528,11 +544,14 @@ $('#itemQty').on('input', function() {
 		    		document.getElementById("placeOrderButton").disabled = false;
 		    		document.getElementById("itemCode").value=null;
 		    		document.getElementById("itemQty").value=null;
+		    		//getTablesByCat();
 		    		
 		            });
 		}//end of if
 		else{
 			alert("Please add Item First")
+    		document.getElementById("placeOrderButton").disabled = false;
+
 		}
 	}
 function getItenNameByCode(){
@@ -692,8 +711,10 @@ function getOrderDataByTableId(tableId,key){
 										
 			      }); 
 	}
+	
 
 </script>
+
 
 </html>
 
