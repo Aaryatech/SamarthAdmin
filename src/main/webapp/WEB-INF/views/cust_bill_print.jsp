@@ -33,9 +33,9 @@
 </head>
 
 </head>
-<body >
+<body onload="directPrint()" >
 	 
-				  <table width="250" border="0" cellspacing="0" cellpadding="0" style="padding:0px; font-family:verdana; font-size:11px; border:1px solid #E7E7E7;">
+				  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding:0px; font-family:verdana; font-size:11px; border:1px solid #E7E7E7;">
 
   <tbody> 
  <!-- <tr>
@@ -79,7 +79,7 @@
         
           <%-- <c:forEach items="${billList}" var="billList" varStatus="count"> --%>
           <tr>
-            <td><span style="font-size:10px">Item 1</span><br><%-- <span style="font-size:7px">
+            <td><span style="font-size:10px">Vanilla Chocolate Sarabat Mix Strobery</span><br><%-- <span style="font-size:7px">
 			<br>HSN-${exBill.remark}</span> --%></td>
             <td align="center"><span style="font-size:10px">2</span></td>
             <td align="center"><span style="font-size:10px">34</span></td>
@@ -200,7 +200,7 @@
     </tr> --%>
   </tbody>
 </table>
-			</body>	<body onload="directPrint()">
+			</body>	
 	<script>
 	 function directPrint()
 	{
@@ -210,5 +210,5 @@
 	} 
 	
 	</script>
-</body>
+
 </html>
