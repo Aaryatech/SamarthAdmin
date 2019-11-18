@@ -113,6 +113,8 @@ public class TransactionAdmController {
 			OrderHeaderList[] orderArr = rest.postForObject(Constants.url+"/orderListByTableNo", map, OrderHeaderList[].class);
 			ordersList = new ArrayList<OrderHeaderList>(Arrays.asList(orderArr));
 			
+			HttpSession session=request.getSession();
+			session.setAttribute("orderBillArray", ordersList);
 			System.out.println("Order-----"+ordersList);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -143,6 +145,8 @@ public class TransactionAdmController {
 			ErrorMessage saveBill = rest.postForObject(Constants.url+"/generateBill", map, ErrorMessage.class);
 			System.out.println("sabveBill---------------"+saveBill);
 			
+			session.setAttribute("saveBill", saveBill);
+
 			if(saveBill.isError()==false) {
 				res=1;
 			}else {

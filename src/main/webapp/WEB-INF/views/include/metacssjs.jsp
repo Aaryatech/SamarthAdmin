@@ -60,6 +60,9 @@
 	src="${pageContext.request.contextPath}/resources/global_assets/js/plugins/ui/ripple.min.js"></script>
 <!-- /core JS files -->
 
+<script
+	src="${pageContext.request.contextPath}/resources/printerJS/epos-2.12.0.js"></script>
+
 <!-- Theme JS files -->
 <script
 	src="${pageContext.request.contextPath}/resources/global_assets/js/plugins/visualization/d3/d3.min.js"></script>

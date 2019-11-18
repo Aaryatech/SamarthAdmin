@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,11 +29,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ats.smadmin.common.Constants;
 import com.ats.smadmin.model.Admin;
+import com.ats.smadmin.model.ErrorMessage;
 import com.ats.smadmin.model.Item;
 import com.ats.smadmin.model.LoginProcess;
 import com.ats.smadmin.model.Order;
 import com.ats.smadmin.model.OrderDetails;
 import com.ats.smadmin.model.OrderDetailsList;
+import com.ats.smadmin.model.OrderHeaderList;
+import com.ats.smadmin.model.TableBean;
 import com.ats.smadmin.model.TableCat;
 import com.ats.smadmin.model.TableList;
 
@@ -311,6 +315,14 @@ public class HomeController {
 
 			ArrayList<OrderDetailsList> ordDetailList = hashMap.get(placeOrderTableId);
 
+			String placeOrderTableName=request.getParameter("placeOrderTableName");
+			
+			
+			
+			
+			StringBuilder sb=new StringBuilder();
+			
+			
 			for (int i = 0; i < ordDetailList.size(); i++) {
 
 				OrderDetails od = new OrderDetails();
@@ -325,16 +337,34 @@ public class HomeController {
 				od.setStatus(1);
 
 				orderDetailList.add(od);
+				
+				sb.append(ordDetailList.get(i).getItemName()+"("+od.getRemark()+")");
+				
+				sb.append(ordDetailList.get(i).getQuantity()+"");
+				
+				
 
 			}
-
+			sb.append("--------------------------------------------");
 			orderRes.setOrderDetailList(orderDetailList);
 
 			orderRes = rest.postForObject(Constants.url + "/saveOrder", orderRes, Order.class);
+			
+
+			String text="\t\tKOT\n"+"Date :- "+orderRes.getOrderDateTime()+"\n"+"Order No :-"+orderRes.getOrderId()+"\t"+"Table No :- "+orderRes.getTableNo()+"\n\n"
+					+"Item                        "+"    Qty\n"+"---------------------------------------------\n"+"--------------------------------------------";
+			
+			text=text+sb.toString();
+			
+			
+			String kotPrint=Constants.createKOTReceipt(orderRes,ordDetailList,placeOrderTableName);
+			System.err.println("text " +text);
+			
 			if (orderRes != null) {
 				hashMap.remove(placeOrderTableId);
 
 			}
+			orderRes.setOrderDate(kotPrint);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -343,9 +373,35 @@ public class HomeController {
 	}
 
 	
-	@RequestMapping(value = "/printBill", method = RequestMethod.GET)
-	public ModelAndView printBill(Locale locale, Model model,HttpSession session) {
+	@RequestMapping(value = "/printBill/{tableName}", method = RequestMethod.GET)
+	public ModelAndView printBill(Locale locale, Model model,HttpSession session,
+			HttpServletRequest request, HttpServletResponse response,@PathVariable String tableName) {
 		ModelAndView mav = new ModelAndView("cust_bill_print");
+		
+		ErrorMessage saveBill =(ErrorMessage) session.getAttribute("saveBill");
+		
+		List<OrderHeaderList> ordersList=(List<OrderHeaderList>) session.getAttribute("orderBillArray");
+		
+		session.removeAttribute("saveBill");
+		session.removeAttribute("orderBillArray");
+		
+		List<OrderDetailsList> ordDetail=new ArrayList<OrderDetailsList>();
+		try {
+				for(int i=0;i<ordersList.size();i++) {
+					
+					ordDetail.addAll(ordersList.get(i).getOrderDetailsList());
+
+				}
+				
+				mav.addObject("billDetail" ,ordDetail);
+				mav.addObject("billNo" ,saveBill);
+				mav.addObject("tableName", tableName);
+				String curDtTime=Constants.getCurDateTime();
+				mav.addObject("curDtTime", curDtTime);
+				
+		}catch (Exception e) {
+			mav = new ModelAndView("cust_bill_print");
+		}
 		return mav;
 	
 	}

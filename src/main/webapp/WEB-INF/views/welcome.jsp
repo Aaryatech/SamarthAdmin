@@ -231,6 +231,8 @@ div.card-title {
 function genBill(tableNo, tableName){
 	//alert("Bill Table----"+tableNo+":"+tableName);
 	tabNo = tableNo;
+	document.getElementById("placeOrderTableName").value=tableName;
+
 	$
 	.getJSON(
 			'${getOrderItemList}',
@@ -300,7 +302,8 @@ function saveOrder(){
 						$("#card").unblock();
 						document.getElementById("myBtn").disabled = false;
 						getTablesByCat();
-						window.open("${pageContext.request.contextPath}/printBill");
+					var tableName=	document.getElementById("placeOrderTableName").value;
+						window.open("${pageContext.request.contextPath}/printBill/"+tableName);
 						
 						
 					}else{
@@ -316,6 +319,7 @@ function saveOrder(){
 	<form id="placeOrderForm" >
 	<input type="hidden" id="placeOrderTableId" name="placeOrderTableId" value="0">
 		<input type="hidden" id="placeOrderTableNo" name="placeOrderTableNo" value="0">
+		<input type="hidden" id="placeOrderTableName" name="placeOrderTableName" value="0">
 	
 	
 	
@@ -534,6 +538,19 @@ $('#itemQty').on('input', function() {
 		            dataType: 'json',
 		    success: function(data){
 		    	//alert(data);
+		    	//printer code
+		    	var builder = new epson.ePOSBuilder();
+				builder.addTextLang("en");
+				builder.addTextSmooth(true);
+				builder.addTextFont(builder.FONT_A);
+				builder.addTextSize(1, 1);
+				
+				builder.addText(data.orderDate);
+				builder.addCut(builder.CUT_FEED);
+				var request = builder.toString();
+				var address = "http://192.168.2.207/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000";
+				var epos = new epson.ePOSPrint(address);
+				epos.send(request);
 
 		    }
 		    }).done(function() {
@@ -643,6 +660,8 @@ function addMenu(tableNo,tableId,tableName){
 	
 	document.getElementById("placeOrderTableId").value=tableId;
 	document.getElementById("placeOrderTableNo").value=tableNo;
+	document.getElementById("placeOrderTableName").value=tableName;
+	
 	//alert("tableNo " +tableNo)
 		showPrevOrdersByTableNo(tableNo);
 

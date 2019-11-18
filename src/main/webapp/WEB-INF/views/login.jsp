@@ -233,11 +233,11 @@ a{
 					<!-- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -->
 					 <input
 						type="submit" value="Login">
-						<br>
+						<%-- <br>
 						<a
 						href="${pageContext.request.contextPath}/showForgotPass"
 						style="align: right">Forgot password?</a>
-
+ --%>
 				</form>
 			</div>
 

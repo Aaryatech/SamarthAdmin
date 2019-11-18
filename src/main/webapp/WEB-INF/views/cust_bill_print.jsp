@@ -45,14 +45,14 @@
     </tr>
     <tr>
       <td colspan="2" align="left" style="padding:0px; border-bottom:0px solid #E7E7E7;">
-      <span style="font-size: 10px; font-family: Arial;">Date :- 01-11-2019 05:30:02 PM</span>
+      <span style="font-size: 10px; font-family: Arial;">Date :- ${curDtTime}</span>
           <%--   <span style="font-size: 10px;"> GSTIN:<strong>${sessionScope.frDetails.frGstNo}</strong></span><br/> --%>
        </td>
     </tr>
     <tr>
       <td colspan="2" align="left" style="padding:1px;font-family: Arial; border-bottom:0px solid #E7E7E7; font-size:10px;"><span style="font-size:10px;">
               
-          Invoice No :- <strong class="style8">005600</strong>
+          Invoice No :- <strong class="style8">${billNo.message}</strong>
           </span>
         
        
@@ -62,7 +62,7 @@
       <table width="100%" border="0" cellspacing="0" cellpadding="2">
   <tbody>
     <tr>
-      <td align="left" style="font-size:10px">Table No: 55 </td>
+      <td align="left" style="font-size:10px">Table No:${tableName} </td>
      <!--  <td align="left" style="font-size:10px">55 </td> -->
     <%--   <td style="font-size:10px">${date} </td> --%>
     </tr >
@@ -76,34 +76,37 @@
             <th style="border-bottom:1px dotted;font-weight: normal;" width="20%" bgcolor="#ECECEC">Rate</th>
             <th style="border-bottom:1px dotted;font-weight: normal;" width="22%" align="right" bgcolor="#ECECEC">Amt</th>
           </tr>
-        
-          <%-- <c:forEach items="${billList}" var="billList" varStatus="count"> --%>
+        <c:set var="tot" value="0"></c:set>
+          <c:forEach items="${billDetail}" var="billDetailList" varStatus="count"> 
+                  <c:set var="tot" value="${tot+billDetailList.total}"></c:set>
+          
           <tr>
-            <td><span style="font-size:10px">Vanilla Chocolate Sarabat Mix Strobery</span><br><%-- <span style="font-size:7px">
+            <td><span style="font-size:10px">${billDetailList.itemName}</span><br><%-- <span style="font-size:7px">
 			<br>HSN-${exBill.remark}</span> --%></td>
+            <td align="center"><span style="font-size:10px">${billDetailList.quantity}</span></td>
+            <td align="center"><span style="font-size:10px">${billDetailList.rate}</span></td>
+            <td align="right"><span style="font-size:10px">${billDetailList.total}</span></td>
+          </tr>
+          </c:forEach>
+          <%--  <tr>
+            <td><span style="font-size:10px">Item 1</span><br><span style="font-size:7px">
+			<br>HSN-${exBill.remark}</span></td>
             <td align="center"><span style="font-size:10px">2</span></td>
             <td align="center"><span style="font-size:10px">34</span></td>
             <td align="right"><span style="font-size:10px">68</span></td>
           </tr>
            <tr>
-            <td><span style="font-size:10px">Item 1</span><br><%-- <span style="font-size:7px">
-			<br>HSN-${exBill.remark}</span> --%></td>
+            <td><span style="font-size:10px">Item 1</span><br><span style="font-size:7px">
+			<br>HSN-${exBill.remark}</span></td>
             <td align="center"><span style="font-size:10px">2</span></td>
             <td align="center"><span style="font-size:10px">34</span></td>
             <td align="right"><span style="font-size:10px">68</span></td>
-          </tr>
-           <tr>
-            <td><span style="font-size:10px">Item 1</span><br><%-- <span style="font-size:7px">
-			<br>HSN-${exBill.remark}</span> --%></td>
-            <td align="center"><span style="font-size:10px">2</span></td>
-            <td align="center"><span style="font-size:10px">34</span></td>
-            <td align="right"><span style="font-size:10px">68</span></td>
-          </tr>
+          </tr> --%>
         <%--   </c:forEach> --%>
           <tr>
             <td style="border-top:1px dotted;"  rowspan="3">&nbsp;</td>
             <td style="border-top:1px dotted;" colspan="2" align="right"><span class="style5">Total : </span></td>
-            <td style="border-top:1px dotted;"  align="right"><span class="style5"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1"  value="0140"/></span></td>
+            <td style="border-top:1px dotted;"  align="right"><span class="style5"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1"  value="${tot}"/></span></td>
           </tr>
            <tr>
             <td colspan="2" align="right"><span class="style7">Discount % :</span></td>
@@ -112,7 +115,7 @@
           <tr>
           
             <td   colspan="2" align="right"><span class="style7">Grand Total : </span></td>
-            <td    align="right"><span class="style7"> <fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1"  value="0140"/></span></td>
+            <td    align="right"><span class="style7"> <fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1"  value="${tot}"/></span></td>
           </tr>
         </tbody>
       </table></td>
