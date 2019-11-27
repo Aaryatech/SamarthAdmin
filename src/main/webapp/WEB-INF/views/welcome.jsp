@@ -373,7 +373,7 @@ function saveOrder(){
 											<select id="itemRemark" name="itemRemark" required
 												class="form-control form-control-lg select"
 												data-container-css-class="select-lg" data-fouc="orderTable"  tabindex="3">
-
+	<option>-</option>
 												<option>with Ice cream</option>
 												<option>without Ice cream</option>
 												<option>plain</option>
